@@ -18,11 +18,13 @@ public class ModDensityFunctions {
 
     public static void bootstrap(BootstapContext<DensityFunction> ctx) {
         var noiseGetter = ctx.lookup(Registries.NOISE);
-        var noiseHolder = noiseGetter.getOrThrow(ModNoises.RINGING_CAVES);
-        DensityFunction noise =
-                DensityFunctions.noise(noiseHolder, 1.3, 1.0);
-        DensityFunction caves =
-                DensityFunctions.add(noise, DensityFunctions.constant(-0.4));
-        ctx.register(RINGING, caves);
+        DensityFunction baseNoise = DensityFunctions.noise(noiseGetter.getOrThrow(ModNoises.RINGING_CAVES), 1.0, 1.0);
+        DensityFunction heightMask = DensityFunctions.yClampedGradient(-64, 0, 1, 0);
+        DensityFunction giantCaves = DensityFunctions.mul(
+                DensityFunctions.add(baseNoise, DensityFunctions.constant(-0.5)),
+                heightMask
+        );
+
+        ctx.register(RINGING, giantCaves);
     }
 }

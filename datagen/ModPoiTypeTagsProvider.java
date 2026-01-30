@@ -1,0 +1,25 @@
+package net.soulmate.rpg_soul.datagen;
+
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.PackOutput;
+import net.minecraft.data.tags.PoiTypeTagsProvider;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.PoiTypeTags;
+import net.minecraftforge.common.data.ExistingFileHelper;
+import net.soulmate.rpg_soul.RPG_Soul;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.concurrent.CompletableFuture;
+
+public class ModPoiTypeTagsProvider extends PoiTypeTagsProvider {
+    public ModPoiTypeTagsProvider(PackOutput pOutput, CompletableFuture<HolderLookup.Provider> pProvider, @Nullable ExistingFileHelper existingFileHelper) {
+        super(pOutput, pProvider, RPG_Soul.MOD_ID, existingFileHelper);
+    }
+
+    @Override
+    protected void addTags(HolderLookup.Provider pProvider) {
+        tag(PoiTypeTags.ACQUIRABLE_JOB_SITE)
+                // Мы передаем сам ResourceLocation, а не строку
+                .addOptional(ResourceLocation.fromNamespaceAndPath(RPG_Soul.MOD_ID, "sound_poi"));
+    }
+}

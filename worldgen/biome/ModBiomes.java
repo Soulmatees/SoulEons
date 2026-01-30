@@ -6,9 +6,11 @@ import net.minecraft.data.worldgen.BootstapContext;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.*;
+import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.soulmate.rpg_soul.RPG_Soul;
+import net.soulmate.rpg_soul.worldgen.ModCarvers;
 
 public class ModBiomes {
     public static final ResourceKey<Biome> RINGING_DEPTHS = ResourceKey.create(Registries.BIOME,
@@ -19,6 +21,8 @@ public class ModBiomes {
         HolderGetter<ConfiguredWorldCarver<?>> carvers = context.lookup(Registries.CONFIGURED_CARVER);
 
         BiomeGenerationSettings.Builder generation = new BiomeGenerationSettings.Builder(features, carvers);
+
+        generation.addCarver(GenerationStep.Carving.AIR, carvers.getOrThrow(ModCarvers.RINGING_CAVES));
 
         context.register(RINGING_DEPTHS, new Biome.BiomeBuilder()
                 .hasPrecipitation(false)
