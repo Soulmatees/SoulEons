@@ -78,18 +78,17 @@ public class RPG_Soul {
             event.accept(ModItems.RESONITE_INGOT);
         }
     }
-
     private void commonSetup(final FMLCommonSetupEvent event) {
+
         event.enqueueWork(() -> {
             ModSurfaceRules.setup();
-
-            // Передаем Ключ Биома и Ключ Измерения (LevelStem)
             com.github.alexthe666.citadel.server.world.ExpandedBiomes.addExpandedBiome(
                     ModBiomes.RINGING_DEPTHS,
                     net.minecraft.world.level.dimension.LevelStem.OVERWORLD
             );
         });
     }
+
 
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
