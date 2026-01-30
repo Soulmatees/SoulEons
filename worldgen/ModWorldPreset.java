@@ -28,8 +28,6 @@ public class ModWorldPreset {
         var noiseSettings = ctx.lookup(Registries.NOISE_SETTINGS);
         var dimTypes = ctx.lookup(Registries.DIMENSION_TYPE);
 
-        // ВРУЧНУЮ создаем список биомов для нашего мира
-        // Здесь ты можешь добавить сколько угодно биомов через List.of
         Climate.ParameterList<Holder<Biome>> parameterList = new Climate.ParameterList<>(List.of(
                 Pair.of(Climate.parameters(
                                 Climate.Parameter.span(-1.0F, 1.0F), // Любая температура
@@ -42,7 +40,6 @@ public class ModWorldPreset {
                         biomes.getOrThrow(ModBiomes.RINGING_DEPTHS))
         ));
 
-        // Создаем генератор напрямую из списка
         NoiseBasedChunkGenerator rpgGenerator = new NoiseBasedChunkGenerator(
                 MultiNoiseBiomeSource.createFromList(parameterList),
                 noiseSettings.getOrThrow(ModNoiseSettings.RPG_OVERWORLD)

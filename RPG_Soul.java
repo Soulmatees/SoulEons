@@ -10,6 +10,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.world.BiomeModifier;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -29,6 +30,7 @@ import net.soulmate.rpg_soul.loot.ModLootModifiers;
 import net.soulmate.rpg_soul.recipe.ModRecipes;
 import net.soulmate.rpg_soul.screen.ModMenuTypes;
 import net.soulmate.rpg_soul.sound.ModSounds;
+import net.soulmate.rpg_soul.util.ModTeleportCommand;
 import net.soulmate.rpg_soul.worldgen.AddBiomesBiomeModifier;
 import net.soulmate.rpg_soul.worldgen.ModSurfaceRules;
 import net.soulmate.rpg_soul.worldgen.biome.ModBiomes;
@@ -66,6 +68,7 @@ public class RPG_Soul {
         modEventBus.addListener(this::commonSetup);
 
 
+
         MinecraftForge.EVENT_BUS.register(this);
         modEventBus.addListener(this::addCreative);
 
@@ -99,6 +102,11 @@ public class RPG_Soul {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
         }
+    }
+    @SubscribeEvent
+    public void onRegisterCommands(RegisterCommandsEvent event) {
+        // Вызываем регистрацию нашей команды телепортации
+        ModTeleportCommand.register(event.getDispatcher());
     }
 
 

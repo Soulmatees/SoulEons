@@ -10,12 +10,11 @@ import net.minecraftforge.common.world.BiomeModifier;
 import net.minecraftforge.common.world.ModifiableBiomeInfo;
 import net.soulmate.rpg_soul.RPG_Soul;
 
-// Этот класс говорит игре: "Возьми этот биом и эту точку климата"
 public record AddBiomesBiomeModifier(HolderSet<Biome> biomes, Climate.ParameterPoint target) implements BiomeModifier {
 
     @Override
     public void modify(Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
-        // Здесь мы ничего не меняем в существующих биомах
+
     }
 
     @Override

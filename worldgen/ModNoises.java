@@ -8,18 +8,15 @@ import net.minecraft.world.level.levelgen.synth.NormalNoise;
 import net.soulmate.rpg_soul.RPG_Soul;
 
 public class ModNoises {
-    // 1. Тот самый, из-за которого крашит
     public static final ResourceKey<NormalNoise.NoiseParameters> SPARKLING_PATCHES =
             ResourceKey.create(Registries.NOISE, ResourceLocation.fromNamespaceAndPath(RPG_Soul.MOD_ID, "sparkling_patches"));
 
-    // 2. Для твоих SurfaceRules (если они там есть)
     public static final ResourceKey<NormalNoise.NoiseParameters> HARDENED_SAND =
             ResourceKey.create(Registries.NOISE, ResourceLocation.fromNamespaceAndPath(RPG_Soul.MOD_ID, "hardened_sand"));
 
     public static final ResourceKey<NormalNoise.NoiseParameters> ECHO_VEINS =
             ResourceKey.create(Registries.NOISE, ResourceLocation.fromNamespaceAndPath(RPG_Soul.MOD_ID, "echo_veins"));
 
-    // 3. Твой старый шум пещер
     public static final ResourceKey<NormalNoise.NoiseParameters> RINGING_CAVES =
             ResourceKey.create(Registries.NOISE, ResourceLocation.fromNamespaceAndPath(RPG_Soul.MOD_ID, "ringing_caves"));
 

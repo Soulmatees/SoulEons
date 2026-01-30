@@ -1,5 +1,7 @@
 {
-  "carvers": {},
+  "carvers": {
+    "air": "rpg_soul:ringing_caves"
+  },
   "downfall": 0.0,
   "effects": {
     "fog_color": 789524,

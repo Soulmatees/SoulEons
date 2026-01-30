@@ -26,7 +26,6 @@ public class ModCarvers {
                         UniformHeight.of(VerticalAnchor.absolute(-64), VerticalAnchor.absolute(0)), // y
                         UniformFloat.of(0.1f, 0.9f),                       // yScale (вертикальный масштаб)
                         VerticalAnchor.aboveBottom(10),                    // lavaLevel
-                        // Набор заменяемых блоков (тег)
                         ctx.lookup(Registries.BLOCK).getOrThrow(net.minecraft.tags.BlockTags.OVERWORLD_CARVER_REPLACEABLES),
                         UniformFloat.of(0.7f, 1.4f),                       // horizontalRadiusModifier
                         UniformFloat.of(0.8f, 1.3f),                       // verticalRadiusModifier
