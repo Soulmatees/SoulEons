@@ -1,16 +1,22 @@
 package net.soulmate.rpg_soul;
 
+import com.github.alexthe666.citadel.server.generation.SurfaceRulesManager;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.Climate;
+import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.world.BiomeModifier;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -19,7 +25,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 import net.soulmate.rpg_soul.block.ModBlocks;
 import net.soulmate.rpg_soul.block.entity.ModBlockEntities;
 import net.soulmate.rpg_soul.effect.ModEffects;
@@ -30,12 +35,16 @@ import net.soulmate.rpg_soul.loot.ModLootModifiers;
 import net.soulmate.rpg_soul.recipe.ModRecipes;
 import net.soulmate.rpg_soul.screen.ModMenuTypes;
 import net.soulmate.rpg_soul.sound.ModSounds;
+import net.soulmate.rpg_soul.util.BiomeSourceAccessor;
 import net.soulmate.rpg_soul.util.ModTeleportCommand;
-import net.soulmate.rpg_soul.worldgen.AddBiomesBiomeModifier;
 import net.soulmate.rpg_soul.worldgen.ModSurfaceRules;
 import net.soulmate.rpg_soul.worldgen.biome.ModBiomes;
 import org.slf4j.Logger;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 @Mod(RPG_Soul.MOD_ID)
 public class RPG_Soul {
@@ -44,12 +53,6 @@ public class RPG_Soul {
     public static final DeferredRegister<Codec<? extends BiomeModifier>> BIOME_MODIFIER_SERIALIZERS =
             DeferredRegister.create(ForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, RPG_Soul.MOD_ID);
 
-    public static final RegistryObject<Codec<AddBiomesBiomeModifier>> ADD_BIOME_CODEC =
-            BIOME_MODIFIER_SERIALIZERS.register("add_biome", () ->
-                    RecordCodecBuilder.create(builder -> builder.group(
-                            Biome.LIST_CODEC.fieldOf("biomes").forGetter(AddBiomesBiomeModifier::biomes),
-                            Climate.ParameterPoint.CODEC.fieldOf("target").forGetter(AddBiomesBiomeModifier::target)
-                    ).apply(builder, AddBiomesBiomeModifier::new)));
 
     public RPG_Soul(FMLJavaModLoadingContext context) {
         IEventBus modEventBus = context.getModEventBus();
@@ -69,10 +72,21 @@ public class RPG_Soul {
 
 
 
+
         MinecraftForge.EVENT_BUS.register(this);
         modEventBus.addListener(this::addCreative);
 
         ModSounds.register(modEventBus);
+    }
+
+    public static void initializeBiomeMap(BiomeSource source, Registry<Biome> registry) {
+        if (source instanceof BiomeSourceAccessor accessor) {
+            Map<ResourceKey<Biome>, Holder<Biome>> map = new HashMap<>();
+            map.put(ModBiomes.RINGING_DEPTHS, registry.getHolderOrThrow(ModBiomes.RINGING_DEPTHS));
+
+            accessor.setResourceKeyMap(map);
+            accessor.expandBiomesWith(Set.of(registry.getHolderOrThrow(ModBiomes.RINGING_DEPTHS)));
+        }
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
@@ -82,16 +96,10 @@ public class RPG_Soul {
         }
     }
     private void commonSetup(final FMLCommonSetupEvent event) {
-
         event.enqueueWork(() -> {
             ModSurfaceRules.setup();
-            com.github.alexthe666.citadel.server.world.ExpandedBiomes.addExpandedBiome(
-                    ModBiomes.RINGING_DEPTHS,
-                    net.minecraft.world.level.dimension.LevelStem.OVERWORLD
-            );
         });
     }
-
 
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
@@ -103,6 +111,17 @@ public class RPG_Soul {
         public static void onClientSetup(FMLClientSetupEvent event) {
         }
     }
+
+
+    @SubscribeEvent
+    public void onLevelLoad(LevelEvent.Load event) {
+        if (event.getLevel() instanceof ServerLevel serverLevel) {
+            BiomeSource source = serverLevel.getChunkSource().getGenerator().getBiomeSource();
+            Registry<Biome> registry = serverLevel.registryAccess().registryOrThrow(Registries.BIOME);
+            initializeBiomeMap(source, registry);
+        }
+    }
+
     @SubscribeEvent
     public void onRegisterCommands(RegisterCommandsEvent event) {
         // Вызываем регистрацию нашей команды телепортации
