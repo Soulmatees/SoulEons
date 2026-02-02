@@ -1,6 +1,5 @@
 package net.soulmate.rpg_soul;
 
-import com.github.alexthe666.citadel.server.generation.SurfaceRulesManager;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.Holder;
@@ -36,7 +35,6 @@ import net.soulmate.rpg_soul.recipe.ModRecipes;
 import net.soulmate.rpg_soul.screen.ModMenuTypes;
 import net.soulmate.rpg_soul.sound.ModSounds;
 import net.soulmate.rpg_soul.util.BiomeSourceAccessor;
-import net.soulmate.rpg_soul.util.ModTeleportCommand;
 import net.soulmate.rpg_soul.worldgen.ModSurfaceRules;
 import net.soulmate.rpg_soul.worldgen.biome.ModBiomes;
 import org.slf4j.Logger;
@@ -54,6 +52,7 @@ public class RPG_Soul {
             DeferredRegister.create(ForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, RPG_Soul.MOD_ID);
 
 
+
     public RPG_Soul(FMLJavaModLoadingContext context) {
         IEventBus modEventBus = context.getModEventBus();
         BIOME_MODIFIER_SERIALIZERS.register(modEventBus);
@@ -69,6 +68,7 @@ public class RPG_Soul {
         ModRecipes.register(modEventBus);
         ModEffects.register(modEventBus);
         modEventBus.addListener(this::commonSetup);
+
 
 
 
@@ -125,7 +125,6 @@ public class RPG_Soul {
     @SubscribeEvent
     public void onRegisterCommands(RegisterCommandsEvent event) {
         // Вызываем регистрацию нашей команды телепортации
-        ModTeleportCommand.register(event.getDispatcher());
     }
 
 

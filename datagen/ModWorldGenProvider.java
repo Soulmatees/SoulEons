@@ -5,6 +5,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraftforge.common.data.DatapackBuiltinEntriesProvider;
 import net.soulmate.rpg_soul.RPG_Soul;
+import net.soulmate.rpg_soul.worldgen.ModDensityFunctions;
+import net.soulmate.rpg_soul.worldgen.ModNoiseSettings;
 import net.soulmate.rpg_soul.worldgen.biome.ModBiomes;
 import net.soulmate.rpg_soul.worldgen.noise.ModNoises;
 
@@ -14,8 +16,9 @@ import java.util.concurrent.CompletableFuture;
 public class ModWorldGenProvider extends DatapackBuiltinEntriesProvider {
     public static final RegistrySetBuilder BUILDER = new RegistrySetBuilder()
             .add(Registries.NOISE, ModNoises::bootstrap)
-            .add(Registries.BIOME, ModBiomes::bootstrap);
-
+            .add(Registries.DENSITY_FUNCTION, ModDensityFunctions::bootstrap)
+            .add(Registries.BIOME, ModBiomes::bootstrap)
+            .add(Registries.NOISE_SETTINGS, ModNoiseSettings::bootstrap);
 
     public ModWorldGenProvider(
             PackOutput output,

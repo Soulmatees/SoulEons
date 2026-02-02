@@ -6,35 +6,47 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Climate;
 import net.minecraft.world.level.biome.MultiNoiseBiomeSource;
-import net.soulmate.rpg_soul.worldgen.biome.ModBiomes;
-import net.soulmate.rpg_soul.worldgen.biome.ModBiomeRarity;
+import net.soulmate.rpg_soul.worldgen.biome.SEBiomeRarity;
 import net.soulmate.rpg_soul.util.BiomeSourceAccessor;
 import net.soulmate.rpg_soul.util.MultiNoiseBiomeSourceAccessor;
+import net.soulmate.rpg_soul.worldgen.biome.BiomeGenerationConfig;
+import net.soulmate.rpg_soul.worldgen.noise.VoronoiGenerator;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Map;
+
 @Mixin(value = MultiNoiseBiomeSource.class, priority = -69420)
-public class MultiNoiseBiomeSourceMixin implements MultiNoiseBiomeSourceAccessor {
-    private long lastSampledWorldSeed;
-    private ResourceKey<Level> lastSampledDimension;
-    @Inject(at = @At("HEAD"), method = "getNoiseBiome", cancellable = true)
-    private void rpg_soul$getNoiseBiomeCoords(int x, int y, int z, Climate.Sampler sampler, CallbackInfoReturnable<Holder<Biome>> cir) {
-        // Проверяем, что мы в Обычном мире (Overworld)
-        if (lastSampledDimension == Level.OVERWORLD) {
-            // Используем Voronoi из Citadel
-            if (ModBiomeRarity.isRingingDepthsRegion(lastSampledWorldSeed, x, z)) {
+public abstract class MultiNoiseBiomeSourceMixin implements MultiNoiseBiomeSourceAccessor {
 
-                // Проверяем глубину. В Minecraft 1.20+ "depth" (Continentalness)
-                // глубоко под землей уходит в высокие значения.
-                float depth = Climate.unquantizeCoord(sampler.sample(x, y, z).depth());
+    @Unique
+    private long rpg_soul$lastSampledWorldSeed;
+    @Unique
+    private ResourceKey<Level> rpg_soul$lastSampledDimension;
 
-                // 0.45F - порог вхождения. Чем выше число, тем глубже и меньше пещера.
-                if (depth > 0.45F) {
-                    Holder<Biome> holder = ((BiomeSourceAccessor)this).getResourceKeyMap().get(ModBiomes.RINGING_DEPTHS);
-                    if (holder != null) {
-                        cir.setReturnValue(holder);
+    @Inject(at = @At("HEAD"),
+            method = "getNoiseBiome(IIILnet/minecraft/world/level/biome/Climate$Sampler;)Lnet/minecraft/core/Holder;",
+            cancellable = true,
+            remap = true)
+    private void ac_getNoiseBiomeCoords(int x, int y, int z, Climate.Sampler sampler, CallbackInfoReturnable<Holder<Biome>> cir) {
+        if (rpg_soul$lastSampledDimension == null) return;
+
+        VoronoiGenerator.VoronoiInfo voronoiInfo = SEBiomeRarity.getRareBiomeInfoForQuad(rpg_soul$lastSampledWorldSeed, x, z);
+
+        if (voronoiInfo != null) {
+            float unquantizedDepth = Climate.unquantizeCoord(sampler.sample(x, y, z).depth());
+            int foundRarityOffset = SEBiomeRarity.getRareBiomeOffsetId(voronoiInfo);
+
+            for (Map.Entry<ResourceKey<Biome>, BiomeGenerationConfig.BiomeGenerationNoiseCondition> entry : BiomeGenerationConfig.BIOMES.entrySet()) {
+                if (foundRarityOffset == entry.getValue().getRarityOffset() &&
+                        entry.getValue().test(x, y, z, unquantizedDepth, sampler, rpg_soul$lastSampledDimension, voronoiInfo)) {
+
+                    var map = ((BiomeSourceAccessor)this).getResourceKeyMap();
+                    if (map != null && map.containsKey(entry.getKey())) {
+                        cir.setReturnValue(map.get(entry.getKey()));
                     }
                 }
             }
@@ -42,7 +54,12 @@ public class MultiNoiseBiomeSourceMixin implements MultiNoiseBiomeSourceAccessor
     }
 
     @Override
-    public void setLastSampledSeed(long seed) { this.lastSampledWorldSeed = seed; }
+    public void setLastSampledSeed(long seed) {
+        this.rpg_soul$lastSampledWorldSeed = seed;
+    }
 
-    public void setLastSampledDimension(ResourceKey<Level> dimension) { this.lastSampledDimension = dimension; }
+    @Override
+    public void setLastSampledDimension(ResourceKey<Level> dimension) {
+        this.rpg_soul$lastSampledDimension = dimension;
+    }
 }

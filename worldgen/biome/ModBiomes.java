@@ -16,15 +16,16 @@ public class ModBiomes {
 
     public static void bootstrap(BootstapContext<Biome> context) {
         HolderGetter<PlacedFeature> features = context.lookup(Registries.PLACED_FEATURE);
-        BiomeGenerationSettings.Builder generation = new BiomeGenerationSettings.Builder(features, context.lookup(Registries.CONFIGURED_CARVER));
+        BiomeGenerationSettings.Builder generation = new BiomeGenerationSettings.Builder(features,
+                context.lookup(Registries.CONFIGURED_CARVER));
         context.register(RINGING_DEPTHS, new Biome.BiomeBuilder()
                 .hasPrecipitation(false)
                 .temperature(0.5f)
                 .downfall(0f)
                 .specialEffects(new BiomeSpecialEffects.Builder()
-                        .fogColor(0x0c0c14)
+                        .fogColor(0x0c0c84)
                         .waterColor(0x3f76e4)
-                        .waterFogColor(0x050533)
+                        .waterFogColor(0x082533)
                         .skyColor(0)
                         .ambientParticle(new AmbientParticleSettings(
                                 net.minecraft.core.particles.ParticleTypes.UNDERWATER, 0.025f))
