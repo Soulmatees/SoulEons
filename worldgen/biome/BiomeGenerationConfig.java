@@ -15,6 +15,7 @@ public class BiomeGenerationConfig {
     static {
         BIOMES.put(ModBiomes.RINGING_DEPTHS, new BiomeGenerationNoiseCondition(0,
                 (x, y, z, depth, sampler, dimension, voronoi) -> {
+                    // Можно добавить доп. условия, например только в Overworld
                     return dimension == Level.OVERWORLD && y < 0;
                 }
         ));

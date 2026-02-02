@@ -12,6 +12,6 @@ public class SEBiomeRarity {
     }
 
     public static int getRareBiomeOffsetId(VoronoiGenerator.VoronoiInfo info) {
-        return Math.abs((info.cellX() * 31 + info.cellZ()) % 2);
+        return Math.abs((info.cellX() * 31 + info.cellZ()) % 100);
     }
 }

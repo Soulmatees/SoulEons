@@ -10,6 +10,7 @@ public class VoronoiGenerator {
     }
 
     public static VoronoiInfo getRareBiomeInfoForQuad(long seed, int x, int z) {
+        // Масштаб сетки Вороного. 1000 — примерно каждые 1000 блоков
         int cellSize = 1000;
         int cellX = Math.floorDiv(x, cellSize);
         int cellZ = Math.floorDiv(z, cellSize);
@@ -17,6 +18,8 @@ public class VoronoiGenerator {
         double minDist = 1e10;
         int targetX = 0;
         int targetZ = 0;
+
+        // Проверяем соседние ячейки, чтобы найти ближайший центр
         for(int i = -1; i <= 1; i++) {
             for(int j = -1; j <= 1; j++) {
                 int curX = cellX + i;
@@ -35,6 +38,8 @@ public class VoronoiGenerator {
                 }
             }
         }
+
+        // Возвращаем информацию о "владельце" данной точки
         return new VoronoiInfo(targetX, targetZ, minDist);
     }
 

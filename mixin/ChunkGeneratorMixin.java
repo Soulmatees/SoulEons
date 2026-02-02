@@ -12,15 +12,14 @@ import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.blending.Blender;
-import net.soulmate.rpg_soul.worldgen.biome.ModBiomes;
+import net.soulmate.rpg_soul.RPG_Soul;
+import net.soulmate.rpg_soul.util.MultiNoiseBiomeSourceAccessor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -32,19 +31,14 @@ public abstract class ChunkGeneratorMixin {
     private void rpg_soul$initializeBiomeSource(Executor pExecutor, RandomState pRandomState, Blender pBlender, StructureManager pStructureManager, ChunkAccess pChunk, CallbackInfoReturnable<CompletableFuture<ChunkAccess>> cir) {
         BiomeSource source = this.getBiomeSource();
 
-        if (source instanceof net.soulmate.rpg_soul.util.BiomeSourceAccessor sa) {
-            var registry = pStructureManager.registryAccess().registryOrThrow(Registries.BIOME);
-            var holder = registry.getHolder(ModBiomes.RINGING_DEPTHS);
-
-            holder.ifPresent(biomeHolder -> {
-                sa.expandBiomesWith(Set.of(biomeHolder));
-                sa.getResourceKeyMap();
-            });
+        if (source instanceof MultiNoiseBiomeSourceAccessor accessor) {
+            long worldSeed = pRandomState.sampler().hashCode();
+            accessor.setLastSampledSeed(worldSeed);
+            accessor.setLastSampledDimension(Level.OVERWORLD);
         }
 
-        if (source instanceof net.soulmate.rpg_soul.util.MultiNoiseBiomeSourceAccessor accessor) {
-            accessor.setLastSampledSeed(pRandomState.sampler().hashCode());
-            accessor.setLastSampledDimension(Level.OVERWORLD);
+        if (source instanceof net.soulmate.rpg_soul.util.BiomeSourceAccessor sa) {
+            sa.getResourceKeyMap();
         }
     }
 }

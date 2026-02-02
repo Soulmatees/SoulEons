@@ -15,10 +15,11 @@ import java.util.concurrent.CompletableFuture;
 
 public class ModWorldGenProvider extends DatapackBuiltinEntriesProvider {
     public static final RegistrySetBuilder BUILDER = new RegistrySetBuilder()
-            .add(Registries.NOISE, ModNoises::bootstrap)
             .add(Registries.DENSITY_FUNCTION, ModDensityFunctions::bootstrap)
-            .add(Registries.BIOME, ModBiomes::bootstrap)
-            .add(Registries.NOISE_SETTINGS, ModNoiseSettings::bootstrap);
+            .add(Registries.NOISE, ModNoises::bootstrap)
+            .add(Registries.NOISE_SETTINGS, ModNoiseSettings::bootstrap)
+            .add(Registries.BIOME, ModBiomes::bootstrap);
+
 
     public ModWorldGenProvider(
             PackOutput output,
